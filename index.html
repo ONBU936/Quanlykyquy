@@ -1767,17 +1767,35 @@
                             totalCurrentlyHolding += rawCollected;
                         }
 
-                        // Logic Cashflow cho Tháng
-                        const checkTerm = (termStr, val) => {
-                            if (!termStr) return 0;
-                            const match = termStr.match(/(\d{1,2})\/(\d{4})/);
-                            if (match && parseInt(match[1], 10) === fMonth && parseInt(match[2], 10) === fYear) {
-                                return val > 0 ? val : 500000;
+                        // MỚI: Tính "Cần thu" dựa trên "Ký quỹ còn lại" và "Kỳ lương thu" (Kể cả để trống)
+                        if (remainingDeposit > 0) {
+                            let expectedAmount = 0;
+                            
+                            // Check Đợt 1
+                            if (!p1Str || p1Str.trim() === '') {
+                                expectedAmount += d1Val;
+                            } else {
+                                const match1 = p1Str.match(/(\d{1,2})\/(\d{4})/);
+                                if (match1 && parseInt(match1[1], 10) === fMonth && parseInt(match1[2], 10) === fYear) {
+                                    expectedAmount += d1Val;
+                                }
                             }
-                            return 0;
-                        };
-                        rowCanThu += checkTerm(p1Str, d1Val);
-                        rowCanThu += checkTerm(p2Str, d2Val);
+                            
+                            // Check Đợt 2
+                            if (!p2Str || p2Str.trim() === '') {
+                                expectedAmount += d2Val;
+                            } else {
+                                const match2 = p2Str.match(/(\d{1,2})\/(\d{4})/);
+                                if (match2 && parseInt(match2[1], 10) === fMonth && parseInt(match2[2], 10) === fYear) {
+                                    expectedAmount += d2Val;
+                                }
+                            }
+                            
+                            // Không thể thu vượt quá số tiền Còn Lại thực tế
+                            rowCanThu = Math.min(expectedAmount, remainingDeposit);
+                        } else {
+                            rowCanThu = 0; // Còn lại = 0 thì không cần thu
+                        }
 
                         if (actualEnd) {
                             const endMatch = actualEnd.match(/(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/);
