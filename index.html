@@ -2038,8 +2038,10 @@
             };
             
             const parseCurrency = (str) => {
-                if (!str) return 0;
-                let num = parseInt(str.replace(/\./g, ''), 10);
+                if (!str || str.trim() === '') return 0;
+                let s = str.trim().toLowerCase();
+                if (s === '0' || s === 'không') return 0;
+                let num = parseInt(s.replace(/\./g, ''), 10);
                 return isNaN(num) ? 0 : num;
             };
 
@@ -2119,6 +2121,7 @@
                         } 
                         else {
                             const dateMatch = start.match(/^\s*(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})\s*$/);
+                            let term1 = '', term2 = '';
                             if (dateMatch) {
                                 let m1 = parseInt(dateMatch[2], 10);
                                 let y1 = parseInt(dateMatch[3], 10);
@@ -2129,33 +2132,69 @@
                                     m1 += 1;
                                     if (m1 > 12) { m1 -= 12; y1 += 1; }
                                 }
-                                let term1 = m1 + '/' + y1;
+                                term1 = m1 + '/' + y1;
 
                                 let m2 = m1 + 1; 
                                 let y2 = y1;
                                 if (m2 > 12) { m2 -= 12; y2 += 1; }
-                                let term2 = m2 + '/' + y2;
+                                term2 = m2 + '/' + y2;
+                            }
 
-                                let valP1 = getCellTextSafe(idxP1);
-                                if (valP1 && valP1 !== term1 && valP1.includes('/')) {
+                            // Tính năng mới: Xử lý giá trị "0" nghĩa là KHÔNG CÓ đợt
+                            let valD1Str = getCellTextSafe(idxD1).trim().toLowerCase();
+                            let valD2Str = getCellTextSafe(idxD2).trim().toLowerCase();
+                            let isD1Zero = (valD1Str === '0' || valD1Str === 'không');
+                            let isD2Zero = (valD2Str === '0' || valD2Str === 'không');
+
+                            let currentTotal = getCellTextSafe(idxTotal);
+                            
+                            // 1. Tự động điền 1.000.000 nếu bảng mới hoàn toàn
+                            if (currentTotal === '') {
+                                setCellTextSafe(idxTotal, '1.000.000');
+                                currentTotal = '1.000.000';
+                            }
+                            
+                            // 2. Chỉnh lại TỔNG TIỀN cho khớp thực tế nếu có đợt bằng 0
+                            if (isD1Zero && isD2Zero) {
+                                setCellTextSafe(idxTotal, '0');
+                            } else if (isD2Zero) {
+                                setCellTextSafe(idxTotal, getCellTextSafe(idxD1));
+                            } else if (isD1Zero) {
+                                setCellTextSafe(idxTotal, getCellTextSafe(idxD2));
+                            }
+
+                            // 3. Tự động xóa hoặc điền Kỳ lương tương ứng
+                            let valP1 = getCellTextSafe(idxP1);
+                            if (idxP1 >= 0) {
+                                if (isD1Zero) {
+                                    if (valP1) setCellTextSafe(idxP1, '');
+                                } else if (!valP1 || valP1.includes('/')) {
                                     let customMatch = valP1.match(/^\s*(\d{1,2})\/(\d{4})\s*$/);
-                                    if(customMatch) {
-                                        let cm = parseInt(customMatch[1], 10) + 1;
-                                        let cy = parseInt(customMatch[2], 10);
-                                        if(cm > 12) { cm -= 12; cy += 1; }
-                                        term2 = cm + '/' + cy;
+                                    if (!customMatch && term1) setCellTextSafe(idxP1, term1);
+                                }
+                            }
+
+                            let valP2 = getCellTextSafe(idxP2);
+                            if (idxP2 >= 0) {
+                                if (isD2Zero) {
+                                    if (valP2) setCellTextSafe(idxP2, '');
+                                } else if (!valP2 || valP2.includes('/')) {
+                                    let customMatch = valP2.match(/^\s*(\d{1,2})\/(\d{4})\s*$/);
+                                    if (!customMatch && term2) {
+                                        // Khớp P2 theo sự điều chỉnh tay của P1 (nếu có)
+                                        valP1 = getCellTextSafe(idxP1);
+                                        if (valP1 && !isD1Zero) {
+                                            let cmMatch = valP1.match(/^\s*(\d{1,2})\/(\d{4})\s*$/);
+                                            if(cmMatch) {
+                                                let cm = parseInt(cmMatch[1], 10) + 1;
+                                                let cy = parseInt(cmMatch[2], 10);
+                                                if(cm > 12) { cm -= 12; cy += 1; }
+                                                term2 = cm + '/' + cy;
+                                            }
+                                        }
+                                        setCellTextSafe(idxP2, term2);
                                     }
                                 }
-
-                                let currentTotal = getCellTextSafe(idxTotal);
-                                let canAutoFill = !currentTotal || currentTotal === '1.000.000' || currentTotal === '0';
-
-                                if (canAutoFill) {
-                                    setCellTextSafe(idxTotal, '1.000.000');
-                                }
-                                
-                                if (idxP1 >= 0 && (!valP1 || valP1.includes('/'))) setCellTextSafe(idxP1, valP1 || term1);
-                                if (idxP2 >= 0 && (!getCellTextSafe(idxP2) || getCellTextSafe(idxP2).includes('/'))) setCellTextSafe(idxP2, term2);
                             }
                         }
                     }
@@ -2179,6 +2218,9 @@
                         } else if (totalVal > 0) {
                             let remaining = totalVal - rawCollected;
                             setCellTextSafe(idxBal, formatCurrency(remaining < 0 ? 0 : remaining));
+                        } else if (totalVal === 0 && (start && end)) {
+                            // Cập nhật tính Ký quỹ còn lại bằng 0 nếu tổng tiền bằng 0
+                            setCellTextSafe(idxBal, '0');
                         } else if (!start || !end) {
                             setCellTextSafe(idxBal, '');
                         }
