@@ -1771,6 +1771,28 @@
 
                     const rawCollected = d1Val + d2Val;
                     
+                    // --- TÍNH TOÁN CẦN THU CHÍNH XÁC THEO TỪNG ĐỢT ---
+                    let valD1Str = getCellTextSafe(cells, idxD1).trim().toLowerCase();
+                    let valD2Str = getCellTextSafe(cells, idxD2).trim().toLowerCase();
+                    let d1IsBlank = (valD1Str === '');
+                    let d2IsBlank = (valD2Str === '');
+                    
+                    let owedD1 = 0;
+                    let owedD2 = 0;
+                    if (remainingDeposit > 0) {
+                        if (d1IsBlank && d2IsBlank) {
+                            owedD1 = remainingDeposit / 2;
+                            owedD2 = remainingDeposit / 2;
+                        } else if (d1IsBlank && !d2IsBlank) {
+                            owedD1 = remainingDeposit;
+                        } else if (!d1IsBlank && d2IsBlank) {
+                            owedD2 = remainingDeposit;
+                        } else {
+                            owedD2 = remainingDeposit; // Trường hợp còn dư lẻ
+                        }
+                    }
+                    // -----------------------------------------------------
+                    
                     // Phân biệt dữ liệu của năm nào dựa vào TG BẮT ĐẦU
                     let baseYear = null;
                     let baseMonth = null;
@@ -1794,34 +1816,30 @@
                         }
 
                         // Tính "Cần thu" dựa trên "Ký quỹ còn lại" và khoảng thời gian
-                        if (remainingDeposit > 0) {
-                            let expectedAmount = 0;
-                            
-                            // Check Đợt 1
-                            if (!p1Str || p1Str.trim() === '') {
-                                expectedAmount += d1Val; // Để trống = cần thu ngay
-                            } else {
-                                const match1 = p1Str.match(/(\d{1,2})\/(\d{4})/);
-                                if (match1 && isInRange(parseInt(match1[1], 10), parseInt(match1[2], 10))) {
-                                    expectedAmount += d1Val;
-                                }
-                            }
-                            
-                            // Check Đợt 2
-                            if (!p2Str || p2Str.trim() === '') {
-                                expectedAmount += d2Val; // Để trống = cần thu ngay
-                            } else {
-                                const match2 = p2Str.match(/(\d{1,2})\/(\d{4})/);
-                                if (match2 && isInRange(parseInt(match2[1], 10), parseInt(match2[2], 10))) {
-                                    expectedAmount += d2Val;
-                                }
-                            }
-                            
-                            // Không thể thu vượt quá số tiền Còn Lại thực tế
-                            rowCanThu = Math.min(expectedAmount, remainingDeposit);
+                        let expectedAmount = 0;
+                        
+                        // Check Đợt 1
+                        if (!p1Str || p1Str.trim() === '') {
+                            expectedAmount += owedD1; // Để trống = cần thu ngay
                         } else {
-                            rowCanThu = 0; // Còn lại = 0 thì không cần thu
+                            const match1 = p1Str.match(/(\d{1,2})\/(\d{4})/);
+                            if (match1 && isInRange(parseInt(match1[1], 10), parseInt(match1[2], 10))) {
+                                expectedAmount += owedD1;
+                            }
                         }
+                        
+                        // Check Đợt 2
+                        if (!p2Str || p2Str.trim() === '') {
+                            expectedAmount += owedD2; // Để trống = cần thu ngay
+                        } else {
+                            const match2 = p2Str.match(/(\d{1,2})\/(\d{4})/);
+                            if (match2 && isInRange(parseInt(match2[1], 10), parseInt(match2[2], 10))) {
+                                expectedAmount += owedD2;
+                            }
+                        }
+                        
+                        // Không thể thu vượt quá số tiền Còn Lại thực tế
+                        rowCanThu = Math.min(expectedAmount, remainingDeposit);
 
                         // Hoàn trả (dựa theo tháng Thực Tế Kết Thúc)
                         if (actualEnd) {
@@ -1854,7 +1872,7 @@
                             totalCurrentlyHolding += rawCollected;
                         }
 
-                        rowCanThu = totalVal;
+                        rowCanThu = remainingDeposit; 
                         rowChuaThu = remainingDeposit; 
 
                         if (actualEnd) {
