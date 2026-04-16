@@ -580,32 +580,23 @@
                 <!-- ============================ VIEW BÁO CÁO TỔNG HỢP ============================ -->
                 <div id="view-bao-cao" class="hidden animate-slide-up w-full">
                     
-                    <!-- BỘ LỌC THÁNG CHO BÁO CÁO -->
+                    <!-- BỘ LỌC KHOẢNG THỜI GIAN CHO BÁO CÁO -->
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 bg-white p-5 rounded-2xl shadow-soft border border-beu-teal/20 relative overflow-hidden">
                         <div class="absolute right-0 top-0 w-32 h-full bg-gradient-to-l from-beu-teal/10 to-transparent pointer-events-none"></div>
                         <div class="relative z-10">
                             <h3 class="text-lg font-extrabold text-beu-darkPurple uppercase"><i class="fas fa-filter text-beu-teal mr-2"></i>Bộ Lọc Báo Cáo</h3>
-                            <p class="text-xs text-gray-500 mt-1 font-medium">Lọc số liệu cần thu ký quỹ và hoàn trả theo tháng hoặc năm cụ thể.</p>
+                            <p class="text-xs text-gray-500 mt-1 font-medium">Lọc số liệu theo khoảng thời gian tùy chỉnh.</p>
                         </div>
                         <div class="flex items-center gap-3 w-full md:w-auto relative z-10 flex-wrap justify-end">
                             <div class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 flex items-center gap-2 transition-all focus-within:border-beu-teal focus-within:ring-2 focus-within:ring-beu-teal/20">
-                                <i class="fas fa-calendar text-gray-400"></i>
-                                <select id="reportYearFilter" onchange="document.getElementById('reportMonthFilter').value=''; updateDashboardStats()" class="bg-transparent border-none text-beu-darkPurple font-bold focus:outline-none cursor-pointer w-full text-sm outline-none">
-                                    <option value="">Lọc theo năm...</option>
-                                    <option value="2024">Năm 2024</option>
-                                    <option value="2025">Năm 2025</option>
-                                    <option value="2026">Năm 2026</option>
-                                    <option value="2027">Năm 2027</option>
-                                    <option value="2028">Năm 2028</option>
-                                    <option value="2029">Năm 2029</option>
-                                    <option value="2030">Năm 2030</option>
-                                </select>
+                                <span class="text-xs font-bold text-gray-500 uppercase">Từ:</span>
+                                <input type="month" id="reportMonthStart" onchange="updateDashboardStats()" class="bg-transparent border-none text-beu-darkPurple font-bold focus:outline-none cursor-pointer w-full text-sm outline-none">
                             </div>
                             <div class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 flex items-center gap-2 transition-all focus-within:border-beu-teal focus-within:ring-2 focus-within:ring-beu-teal/20">
-                                <i class="fas fa-calendar-alt text-gray-400"></i>
-                                <input type="month" id="reportMonthFilter" onchange="document.getElementById('reportYearFilter').value=''; updateDashboardStats()" class="bg-transparent border-none text-beu-darkPurple font-bold focus:outline-none cursor-pointer w-full text-sm">
+                                <span class="text-xs font-bold text-gray-500 uppercase">Đến:</span>
+                                <input type="month" id="reportMonthEnd" onchange="updateDashboardStats()" class="bg-transparent border-none text-beu-darkPurple font-bold focus:outline-none cursor-pointer w-full text-sm">
                             </div>
-                            <button onclick="document.getElementById('reportMonthFilter').value=''; document.getElementById('reportYearFilter').value=''; updateDashboardStats();" class="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0" title="Xóa bộ lọc (Xem Lũy kế)">
+                            <button onclick="document.getElementById('reportMonthStart').value=''; document.getElementById('reportMonthEnd').value=''; updateDashboardStats();" class="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0" title="Xóa bộ lọc (Xem Lũy kế)">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
@@ -614,7 +605,7 @@
                     <!-- KHU VỰC THỐNG KÊ ĐƯỢC ĐỒNG BỘ TRỰC TIẾP TỪ SPREADSHEET -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         
-                        <!-- THẺ 1: TỔNG KÝ QUỸ ĐÃ THU -->
+                        <!-- THẺ 1: TỔNG KÝ QUỸ ĐÃ THU / CẦN THU -->
                         <div class="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex flex-col justify-center relative overflow-hidden group transition-all">
                             <div class="absolute right-0 bottom-0 opacity-5 w-24 h-24 transform translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
                                 <i class="fas fa-vault text-beu-teal text-8xl"></i>
@@ -1573,19 +1564,33 @@
             try {
                 let data = [];
                 
-                const filterMonthVal = document.getElementById('reportMonthFilter')?.value;
-                const filterYearVal = document.getElementById('reportYearFilter')?.value;
+                const startVal = document.getElementById('reportMonthStart')?.value;
+                const endVal = document.getElementById('reportMonthEnd')?.value;
                 
                 let reportTitleStr = "Bao_Cao_Tong_Hop_GV";
                 let titleRow = ["BÁO CÁO TỔNG HỢP GIÁO VIÊN - LŨY KẾ TOÀN THỜI GIAN"];
                 
-                if (filterMonthVal) {
-                    const parts = filterMonthVal.split('-');
-                    reportTitleStr = `Bao_Cao_Thang_${parts[1]}_${parts[0]}`;
-                    titleRow = [`BÁO CÁO TỔNG HỢP GIÁO VIÊN - THÁNG ${parts[1]}/${parts[0]}`];
-                } else if (filterYearVal) {
-                    reportTitleStr = `Bao_Cao_Nam_${filterYearVal}`;
-                    titleRow = [`BÁO CÁO TỔNG HỢP GIÁO VIÊN - NĂM ${filterYearVal}`];
+                if (startVal || endVal) {
+                    let sText = '', eText = '';
+                    if (startVal) {
+                        const parts = startVal.split('-');
+                        sText = `${parts[1]}/${parts[0]}`;
+                    }
+                    if (endVal) {
+                        const parts = endVal.split('-');
+                        eText = `${parts[1]}/${parts[0]}`;
+                    }
+                    
+                    if (startVal && endVal) {
+                        reportTitleStr = `Bao_Cao_Tu_${sText.replace('/','_')}_Den_${eText.replace('/','_')}`;
+                        titleRow = [`BÁO CÁO TỔNG HỢP GIÁO VIÊN - TỪ ${sText} ĐẾN ${eText}`];
+                    } else if (startVal) {
+                        reportTitleStr = `Bao_Cao_Tu_${sText.replace('/','_')}`;
+                        titleRow = [`BÁO CÁO TỔNG HỢP GIÁO VIÊN - TỪ THÁNG ${sText}`];
+                    } else if (endVal) {
+                        reportTitleStr = `Bao_Cao_Den_${eText.replace('/','_')}`;
+                        titleRow = [`BÁO CÁO TỔNG HỢP GIÁO VIÊN - ĐẾN THÁNG ${eText}`];
+                    }
                 }
 
                 data.push(titleRow);
@@ -1653,20 +1658,41 @@
             if (sessionStorage.getItem('beu_role') !== 'viewer') forceSaveAll(true); // Viewer thì không save
             
             let filterMode = 'all'; 
-            let fMonth, fYear;
+            const startVal = document.getElementById('reportMonthStart')?.value;
+            const endVal = document.getElementById('reportMonthEnd')?.value;
 
-            const monthFilterVal = document.getElementById('reportMonthFilter')?.value;
-            const yearFilterVal = document.getElementById('reportYearFilter')?.value;
+            let sYear = 0, sMonth = 1, eYear = 9999, eMonth = 12;
+            let shortRangeText = '';
 
-            if (monthFilterVal) {
-                filterMode = 'month';
-                const parts = monthFilterVal.split('-');
-                fYear = parseInt(parts[0], 10);
-                fMonth = parseInt(parts[1], 10);
-            } else if (yearFilterVal) {
-                filterMode = 'year';
-                fYear = parseInt(yearFilterVal, 10);
+            if (startVal || endVal) {
+                filterMode = 'range';
+                if (startVal) {
+                    const parts = startVal.split('-');
+                    sYear = parseInt(parts[0], 10);
+                    sMonth = parseInt(parts[1], 10);
+                }
+                if (endVal) {
+                    const parts = endVal.split('-');
+                    eYear = parseInt(parts[0], 10);
+                    eMonth = parseInt(parts[1], 10);
+                }
+
+                if (startVal && endVal) {
+                    shortRangeText = `(${sMonth}/${sYear} - ${eMonth}/${eYear})`;
+                } else if (startVal) {
+                    shortRangeText = `(Từ ${sMonth}/${sYear})`;
+                } else if (endVal) {
+                    shortRangeText = `(Đến ${eMonth}/${eYear})`;
+                }
             }
+
+            const isInRange = (m, y) => {
+                if (!m || !y) return false;
+                const val = y * 12 + m;
+                const sVal = sYear * 12 + sMonth;
+                const eVal = eYear * 12 + eMonth;
+                return val >= sVal && val <= eVal;
+            };
 
             let statCanThu = 0; 
             let statDaThu = 0;  
@@ -1762,31 +1788,31 @@
                     let rowChuaThu = 0;
                     let rowChuaHoanTra = 0;
 
-                    if (filterMode === 'month') {
-                        if (baseMonth === fMonth && baseYear === fYear && !isConfirmed) {
+                    if (filterMode === 'range') {
+                        if (isInRange(baseMonth, baseYear) && !isConfirmed) {
                             totalCurrentlyHolding += rawCollected;
                         }
 
-                        // MỚI: Tính "Cần thu" dựa trên "Ký quỹ còn lại" và "Kỳ lương thu" (Kể cả để trống)
+                        // Tính "Cần thu" dựa trên "Ký quỹ còn lại" và khoảng thời gian
                         if (remainingDeposit > 0) {
                             let expectedAmount = 0;
                             
                             // Check Đợt 1
                             if (!p1Str || p1Str.trim() === '') {
-                                expectedAmount += d1Val;
+                                expectedAmount += d1Val; // Để trống = cần thu ngay
                             } else {
                                 const match1 = p1Str.match(/(\d{1,2})\/(\d{4})/);
-                                if (match1 && parseInt(match1[1], 10) === fMonth && parseInt(match1[2], 10) === fYear) {
+                                if (match1 && isInRange(parseInt(match1[1], 10), parseInt(match1[2], 10))) {
                                     expectedAmount += d1Val;
                                 }
                             }
                             
                             // Check Đợt 2
                             if (!p2Str || p2Str.trim() === '') {
-                                expectedAmount += d2Val;
+                                expectedAmount += d2Val; // Để trống = cần thu ngay
                             } else {
                                 const match2 = p2Str.match(/(\d{1,2})\/(\d{4})/);
-                                if (match2 && parseInt(match2[1], 10) === fMonth && parseInt(match2[2], 10) === fYear) {
+                                if (match2 && isInRange(parseInt(match2[1], 10), parseInt(match2[2], 10))) {
                                     expectedAmount += d2Val;
                                 }
                             }
@@ -1797,9 +1823,10 @@
                             rowCanThu = 0; // Còn lại = 0 thì không cần thu
                         }
 
+                        // Hoàn trả (dựa theo tháng Thực Tế Kết Thúc)
                         if (actualEnd) {
                             const endMatch = actualEnd.match(/(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/);
-                            if (endMatch && parseInt(endMatch[2],10) === fMonth && parseInt(endMatch[3],10) === fYear) {
+                            if (endMatch && isInRange(parseInt(endMatch[2],10), parseInt(endMatch[3],10))) {
                                 if (isConfirmed) {
                                     rowHoanTra = refunded || rawCollected;
                                     statLopHoanTat++;
@@ -1821,48 +1848,12 @@
                             teacherStats[key].chuaHoanTra += rowChuaHoanTra;
                         }
 
-                    } else if (filterMode === 'year') {
-                        if (baseYear === fYear && !isConfirmed) {
-                            totalCurrentlyHolding += rawCollected;
-                        }
-
-                        // Logic phân cụm (Cohort) cho Năm học
-                        if (baseYear === fYear) {
-                            rowCanThu = totalVal;
-                            rowDaThu = rawCollected;
-                            rowChuaThu = remainingDeposit; 
-
-                            if (actualEnd) {
-                                if (isConfirmed) {
-                                    rowHoanTra = refunded || rawCollected;
-                                    statLopHoanTat++;
-                                } else {
-                                    rowChuaHoanTra = refunded || rawCollected;
-                                }
-                            }
-
-                            statCanThu += rowCanThu;
-                            statDaThu += rowDaThu;
-                            statChuaThu += rowChuaThu;
-                            statHoanTra += rowHoanTra;
-                            statChuaHoanTra += rowChuaHoanTra;
-
-                            if (gv && lop && (rowCanThu > 0 || rowDaThu > 0 || rowHoanTra > 0 || rowChuaHoanTra > 0)) {
-                                const key = gv + '|||' + lop;
-                                if (!teacherStats[key]) teacherStats[key] = { gv: gv, lop: lop, canThu: 0, hoanTra: 0, chuaHoanTra: 0, daThu: 0, chuaThu: 0 };
-                                teacherStats[key].daThu += rowDaThu;
-                                teacherStats[key].chuaThu += rowChuaThu;
-                                teacherStats[key].hoanTra += rowHoanTra;
-                                teacherStats[key].chuaHoanTra += rowChuaHoanTra;
-                                teacherStats[key].canThu += rowCanThu;
-                            }
-                        }
                     } else {
+                        // Logic Lũy kế toàn thời gian (khi không chọn bộ lọc nào)
                         if (!isConfirmed) {
                             totalCurrentlyHolding += rawCollected;
                         }
 
-                        // Logic Lũy kế toàn thời gian
                         rowCanThu = totalVal;
                         rowChuaThu = remainingDeposit; 
 
@@ -1896,55 +1887,29 @@
 
             document.getElementById('statTotalDeposit').innerHTML = `${formatCurrency(totalCurrentlyHolding)} <span class="text-2xl font-bold opacity-80">VNĐ</span>`;
 
-            if (filterMode === 'month') {
-                document.getElementById('statTotalDepositTitle').innerHTML = `<i class="fas fa-wallet text-beu-teal"></i> Tồn Quỹ Đang Giữ (Tháng ${fMonth}/${fYear})`;
+            if (filterMode === 'range') {
+                document.getElementById('statTotalDepositTitle').innerHTML = `<i class="fas fa-wallet text-beu-teal"></i> Tồn Quỹ Đang Giữ ${shortRangeText}`;
 
-                document.getElementById('card1-title').innerText = `Cần Thu Ký Quỹ (Tháng ${fMonth}/${fYear})`;
+                document.getElementById('card1-title').innerText = `Cần Thu Ký Quỹ ${shortRangeText}`;
                 document.getElementById('card1-title').className = "text-xs text-yellow-600 font-bold uppercase tracking-widest mb-1 transition-all";
                 document.getElementById('reportTotalCollected').innerText = `${formatCurrency(statCanThu)} VNĐ`;
                 document.getElementById('reportTotalCollected').className = "text-2xl font-black text-yellow-500 mb-3 transition-all";
 
-                document.getElementById('card2-title').innerText = `Đã Hoàn Trả (Tháng ${fMonth}/${fYear})`;
+                document.getElementById('card2-title').innerText = `Đã Hoàn Trả ${shortRangeText}`;
                 document.getElementById('reportTotalRefunded').innerText = `${formatCurrency(statHoanTra)} VNĐ`;
 
                 document.getElementById('card3-container').style.display = 'none'; 
 
-                document.getElementById('card4-title').innerText = `Lớp Đã Hoàn Tất (Tháng ${fMonth}/${fYear})`;
+                document.getElementById('card4-title').innerText = `Lớp Đã Hoàn Tất ${shortRangeText}`;
                 document.getElementById('reportTotalClasses').innerText = `${statLopHoanTat} Lớp`;
 
-                document.getElementById('th-col-2').innerText = `Cần Thu Ký Quỹ (T${fMonth})`;
+                document.getElementById('th-col-2').innerText = `Cần Thu Ký Quỹ ${shortRangeText}`;
                 document.getElementById('th-col-2').className = "py-5 px-6 font-bold text-center text-yellow-600 whitespace-nowrap transition-all";
                 document.getElementById('th-col-3').style.display = 'none'; 
-                document.getElementById('th-col-chua-hoan-tra').innerText = `Chưa Hoàn Trả (T${fMonth})`;
-                document.getElementById('th-col-4').innerText = `Đã Hoàn Trả (T${fMonth})`;
+                document.getElementById('th-col-chua-hoan-tra').innerText = `Chưa Hoàn Trả ${shortRangeText}`;
+                document.getElementById('th-col-4').innerText = `Đã Hoàn Trả ${shortRangeText}`;
 
-                document.getElementById('statUnrefundedTitle').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Chưa Hoàn Trả (Tháng ${fMonth}/${fYear})`;
-                document.getElementById('statUnrefunded').innerHTML = `${formatCurrency(statChuaHoanTra)} <span class="text-lg font-bold opacity-80">VNĐ</span>`;
-            } else if (filterMode === 'year') {
-                document.getElementById('statTotalDepositTitle').innerHTML = `<i class="fas fa-wallet text-beu-teal"></i> Tồn Quỹ Đang Giữ (Năm ${fYear})`;
-
-                document.getElementById('card1-title').innerText = `Tổng Ký Quỹ Đã Thu (Năm ${fYear})`;
-                document.getElementById('card1-title').className = "text-xs text-gray-400 font-bold uppercase tracking-widest mb-1 transition-all";
-                document.getElementById('reportTotalCollected').innerText = `${formatCurrency(statDaThu)} VNĐ`;
-                document.getElementById('reportTotalCollected').className = "text-2xl font-black text-beu-darkPurple mb-3 transition-all";
-
-                document.getElementById('card2-title').innerText = `Đã Hoàn Trả (Năm ${fYear})`;
-                document.getElementById('reportTotalRefunded').innerText = `${formatCurrency(statHoanTra)} VNĐ`;
-
-                document.getElementById('card3-container').style.display = 'flex'; 
-                document.getElementById('card3-title').innerText = `Chưa Thu Ký Quỹ (Năm ${fYear})`;
-                document.getElementById('reportTotalUncollected').innerText = `${formatCurrency(statChuaThu)} VNĐ`;
-
-                document.getElementById('card4-title').innerText = `Lớp Đã Hoàn Tất (Năm ${fYear})`;
-                document.getElementById('reportTotalClasses').innerText = `${statLopHoanTat} Lớp`;
-
-                document.getElementById('th-col-2').innerText = `Tổng Đã Thu Ký Quỹ`;
-                document.getElementById('th-col-2').className = "py-5 px-6 font-bold text-center text-beu-darkPurple whitespace-nowrap transition-all";
-                document.getElementById('th-col-3').style.display = 'table-cell'; 
-                document.getElementById('th-col-chua-hoan-tra').innerText = `Chưa Hoàn Trả (Năm ${fYear})`;
-                document.getElementById('th-col-4').innerText = `Đã Hoàn Trả (Năm ${fYear})`;
-
-                document.getElementById('statUnrefundedTitle').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Chưa Hoàn Trả (Năm ${fYear})`;
+                document.getElementById('statUnrefundedTitle').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Chưa Hoàn Trả ${shortRangeText}`;
                 document.getElementById('statUnrefunded').innerHTML = `${formatCurrency(statChuaHoanTra)} <span class="text-lg font-bold opacity-80">VNĐ</span>`;
             } else {
                 document.getElementById('statTotalDepositTitle').innerHTML = `<i class="fas fa-wallet text-beu-teal"></i> Tổng Tồn Quỹ Học Viện Đang Giữ (Lũy kế)`;
@@ -1979,7 +1944,7 @@
                 let stt = 1;
 
                 if (Object.keys(teacherStats).length === 0) {
-                    reportTbody.innerHTML = `<tr><td colspan="7" class="py-12 text-center text-gray-500 italic">Chưa có dữ liệu phát sinh.</td></tr>`;
+                    reportTbody.innerHTML = `<tr><td colspan="7" class="py-12 text-center text-gray-500 italic">Chưa có dữ liệu phát sinh trong khoảng thời gian này.</td></tr>`;
                 } else {
                     for (const [key, data] of Object.entries(teacherStats)) {
                         const tr = document.createElement('tr');
@@ -1989,7 +1954,7 @@
                             ? `<span class="text-red-500 font-black">${formatCurrency(data.chuaHoanTra)}đ</span>` 
                             : `<span class="text-gray-400 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">Hoàn tất</span>`;
 
-                        if (filterMode === 'month') {
+                        if (filterMode === 'range') {
                             tr.innerHTML = `
                                 <td class="py-4 px-6 text-center font-bold text-gray-400">${stt++}</td>
                                 <td class="py-4 px-6 font-bold text-beu-darkPurple">${data.gv}</td>
