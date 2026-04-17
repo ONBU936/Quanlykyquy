@@ -589,14 +589,27 @@
                         </div>
                         <div class="flex items-center gap-3 w-full md:w-auto relative z-10 flex-wrap justify-end">
                             <div class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 flex items-center gap-2 transition-all focus-within:border-beu-teal focus-within:ring-2 focus-within:ring-beu-teal/20">
+                                <i class="fas fa-calendar text-gray-400"></i>
+                                <select id="reportYearFilter" onchange="document.getElementById('reportMonthStart').value=''; document.getElementById('reportMonthEnd').value=''; updateDashboardStats()" class="bg-transparent border-none text-beu-darkPurple font-bold focus:outline-none cursor-pointer w-full text-sm outline-none">
+                                    <option value="">Lọc theo năm...</option>
+                                    <option value="2024">Năm 2024</option>
+                                    <option value="2025">Năm 2025</option>
+                                    <option value="2026">Năm 2026</option>
+                                    <option value="2027">Năm 2027</option>
+                                    <option value="2028">Năm 2028</option>
+                                    <option value="2029">Năm 2029</option>
+                                    <option value="2030">Năm 2030</option>
+                                </select>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 flex items-center gap-2 transition-all focus-within:border-beu-teal focus-within:ring-2 focus-within:ring-beu-teal/20">
                                 <span class="text-xs font-bold text-gray-500 uppercase">Từ:</span>
-                                <input type="month" id="reportMonthStart" onchange="updateDashboardStats()" class="bg-transparent border-none text-beu-darkPurple font-bold focus:outline-none cursor-pointer w-full text-sm outline-none">
+                                <input type="month" id="reportMonthStart" onchange="document.getElementById('reportYearFilter').value=''; if(!document.getElementById('reportMonthEnd').value) document.getElementById('reportMonthEnd').value = this.value; updateDashboardStats()" class="bg-transparent border-none text-beu-darkPurple font-bold focus:outline-none cursor-pointer w-full text-sm outline-none">
                             </div>
                             <div class="bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 flex items-center gap-2 transition-all focus-within:border-beu-teal focus-within:ring-2 focus-within:ring-beu-teal/20">
                                 <span class="text-xs font-bold text-gray-500 uppercase">Đến:</span>
-                                <input type="month" id="reportMonthEnd" onchange="updateDashboardStats()" class="bg-transparent border-none text-beu-darkPurple font-bold focus:outline-none cursor-pointer w-full text-sm">
+                                <input type="month" id="reportMonthEnd" onchange="document.getElementById('reportYearFilter').value=''; updateDashboardStats()" class="bg-transparent border-none text-beu-darkPurple font-bold focus:outline-none cursor-pointer w-full text-sm">
                             </div>
-                            <button onclick="document.getElementById('reportMonthStart').value=''; document.getElementById('reportMonthEnd').value=''; updateDashboardStats();" class="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0" title="Xóa bộ lọc (Xem Lũy kế)">
+                            <button onclick="document.getElementById('reportYearFilter').value=''; document.getElementById('reportMonthStart').value=''; document.getElementById('reportMonthEnd').value=''; updateDashboardStats();" class="bg-red-50 text-red-500 hover:bg-red-500 hover:text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0" title="Xóa bộ lọc (Xem Lũy kế)">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
@@ -605,34 +618,34 @@
                     <!-- KHU VỰC THỐNG KÊ ĐƯỢC ĐỒNG BỘ TRỰC TIẾP TỪ SPREADSHEET -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         
-                        <!-- THẺ 1: TỔNG KÝ QUỸ ĐÃ THU / CẦN THU -->
+                        <!-- THẺ 1: CẦN THU -->
+                        <div class="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex flex-col justify-center relative overflow-hidden group transition-all">
+                            <div class="absolute right-0 bottom-0 opacity-5 w-24 h-24 transform translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-exclamation-circle text-yellow-500 text-8xl"></i>
+                            </div>
+                            <p id="card1-title" class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">CẦN THU KÝ QUỸ</p>
+                            <h4 id="reportTotalCollected" class="text-2xl font-black text-beu-darkPurple mb-3">Đang tải...</h4>
+                            <span class="text-[10px] text-yellow-600 font-bold bg-yellow-50 px-3 py-1.5 rounded-lg self-start">Tự động tính toán</span>
+                        </div>
+                        
+                        <!-- THẺ 2: ĐÃ THU -->
                         <div class="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex flex-col justify-center relative overflow-hidden group transition-all">
                             <div class="absolute right-0 bottom-0 opacity-5 w-24 h-24 transform translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
                                 <i class="fas fa-vault text-beu-teal text-8xl"></i>
                             </div>
-                            <p id="card1-title" class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Tổng Ký Quỹ Đã Thu</p>
-                            <h4 id="reportTotalCollected" class="text-2xl font-black text-beu-darkPurple mb-3">Đang tải...</h4>
-                            <span class="text-[10px] text-green-600 font-bold bg-green-50 px-3 py-1.5 rounded-lg self-start flex items-center gap-1"><i class="fas fa-arrow-up"></i> Tự động tính toán</span>
-                        </div>
-                        
-                        <!-- THẺ 2: ĐÃ HOÀN TRẢ LŨY KẾ -->
-                        <div class="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex flex-col justify-center relative overflow-hidden group transition-all">
-                            <div class="absolute right-0 bottom-0 opacity-5 w-24 h-24 transform translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-hand-holding-usd text-yellow-500 text-8xl"></i>
-                            </div>
-                            <p id="card2-title" class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Đã Hoàn Trả (Lũy Kế)</p>
+                            <p id="card2-title" class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">ĐÃ THU KÝ QUỸ</p>
                             <h4 id="reportTotalRefunded" class="text-2xl font-black text-gray-700 mb-3">Đang tải...</h4>
-                            <span class="text-[10px] text-yellow-600 font-bold bg-yellow-50 px-3 py-1.5 rounded-lg self-start">Theo số liệu Kế Toán</span>
+                            <span class="text-[10px] text-green-600 font-bold bg-green-50 px-3 py-1.5 rounded-lg self-start">Dòng tiền đã vào quỹ</span>
                         </div>
 
-                        <!-- THẺ 3: CHƯA THU KÝ QUỸ -->
+                        <!-- THẺ 3: ĐÃ HOÀN TRẢ -->
                         <div id="card3-container" class="bg-white p-6 rounded-3xl shadow-soft border border-gray-100 flex flex-col justify-center relative overflow-hidden group transition-all">
                             <div class="absolute right-0 bottom-0 opacity-5 w-24 h-24 transform translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-exclamation-circle text-yellow-500 text-8xl"></i>
+                                <i class="fas fa-hand-holding-usd text-green-500 text-8xl"></i>
                             </div>
-                            <p id="card3-title" class="text-xs text-yellow-600 font-bold uppercase tracking-widest mb-1">Chưa Thu Ký Quỹ</p>
-                            <h4 id="reportTotalUncollected" class="text-2xl font-black text-yellow-500 mb-3">Đang tải...</h4>
-                            <span class="text-[10px] text-yellow-600 font-bold bg-yellow-50 px-3 py-1.5 rounded-lg self-start">Cần xử lý gấp</span>
+                            <p id="card3-title" class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">ĐÃ HOÀN TRẢ</p>
+                            <h4 id="reportTotalUncollected" class="text-2xl font-black text-green-600 mb-3">Đang tải...</h4>
+                            <span class="text-[10px] text-green-600 font-bold bg-green-50 px-3 py-1.5 rounded-lg self-start">Theo số liệu Kế Toán</span>
                         </div>
 
                         <!-- THẺ 4: LỚP ĐÃ HOÀN TẤT -->
@@ -640,7 +653,7 @@
                             <div class="absolute right-0 bottom-0 opacity-5 w-24 h-24 transform translate-x-4 translate-y-4 group-hover:scale-110 transition-transform">
                                 <i class="fas fa-check-double text-beu-purple text-8xl"></i>
                             </div>
-                            <p id="card4-title" class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Lớp Đã Hoàn Tất</p>
+                            <p id="card4-title" class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">LỚP ĐÃ HOÀN TẤT</p>
                             <h4 id="reportTotalClasses" class="text-2xl font-black text-beu-purple mb-3">0 Lớp</h4>
                             <span class="text-[10px] text-beu-purple font-bold bg-beu-purple/10 px-3 py-1.5 rounded-lg self-start">Chu trình khép kín</span>
                         </div>
@@ -661,7 +674,7 @@
                                 
                                 <!-- BỔ SUNG TỔNG CHƯA HOÀN TRẢ THEO YÊU CẦU CỦA KẾ TOÁN -->
                                 <div class="text-left md:text-right mt-6 md:mt-0 bg-white/10 p-5 rounded-2xl border border-white/20 backdrop-blur-sm w-full md:w-auto">
-                                    <p id="statUnrefundedTitle" class="text-xs font-bold text-red-300 uppercase tracking-widest mb-2 flex items-center md:justify-end gap-2"><i class="fas fa-exclamation-triangle"></i> Tổng Chưa Hoàn Trả (Lũy kế)</p>
+                                    <p id="statUnrefundedTitle" class="text-xs font-bold text-red-300 uppercase tracking-widest mb-2 flex items-center md:justify-end gap-2"><i class="fas fa-exclamation-triangle"></i> Tổng Cần Hoàn Trả (Lũy kế)</p>
                                     <h3 id="statUnrefunded" class="text-3xl lg:text-4xl font-black text-red-400 tracking-tight">0 <span class="text-lg font-bold opacity-80">VNĐ</span></h3>
                                 </div>
                             </div>
@@ -693,7 +706,7 @@
                                         <th class="py-5 px-6 font-bold whitespace-nowrap text-center text-beu-darkPurple">Lớp</th>
                                         <th id="th-col-2" class="py-5 px-6 font-bold text-center text-beu-darkPurple whitespace-nowrap transition-all">Tổng Đã Thu Ký Quỹ</th>
                                         <th id="th-col-3" class="py-5 px-6 font-bold text-center text-yellow-600 whitespace-nowrap transition-all">Chưa Thu Ký Quỹ</th>
-                                        <th id="th-col-chua-hoan-tra" class="py-5 px-6 font-bold text-center text-red-500 whitespace-nowrap transition-all">Chưa Hoàn Trả</th>
+                                        <th id="th-col-chua-hoan-tra" class="py-5 px-6 font-bold text-center text-red-500 whitespace-nowrap transition-all">Cần Hoàn Trả</th>
                                         <th id="th-col-4" class="py-5 px-6 font-bold text-center text-green-600 whitespace-nowrap transition-all">Đã Hoàn Trả</th>
                                     </tr>
                                 </thead>
@@ -1564,13 +1577,17 @@
             try {
                 let data = [];
                 
+                const yearVal = document.getElementById('reportYearFilter')?.value;
                 const startVal = document.getElementById('reportMonthStart')?.value;
                 const endVal = document.getElementById('reportMonthEnd')?.value;
                 
                 let reportTitleStr = "Bao_Cao_Tong_Hop_GV";
                 let titleRow = ["BÁO CÁO TỔNG HỢP GIÁO VIÊN - LŨY KẾ TOÀN THỜI GIAN"];
                 
-                if (startVal || endVal) {
+                if (yearVal) {
+                    reportTitleStr = `Bao_Cao_Nam_${yearVal}`;
+                    titleRow = [`BÁO CÁO TỔNG HỢP GIÁO VIÊN - NĂM ${yearVal}`];
+                } else if (startVal || endVal) {
                     let sText = '', eText = '';
                     if (startVal) {
                         const parts = startVal.split('-');
@@ -1582,8 +1599,13 @@
                     }
                     
                     if (startVal && endVal) {
-                        reportTitleStr = `Bao_Cao_Tu_${sText.replace('/','_')}_Den_${eText.replace('/','_')}`;
-                        titleRow = [`BÁO CÁO TỔNG HỢP GIÁO VIÊN - TỪ ${sText} ĐẾN ${eText}`];
+                        if (startVal === endVal) {
+                            reportTitleStr = `Bao_Cao_Thang_${startVal.split('-')[1]}_${startVal.split('-')[0]}`;
+                            titleRow = [`BÁO CÁO TỔNG HỢP GIÁO VIÊN - THÁNG ${sText}`];
+                        } else {
+                            reportTitleStr = `Bao_Cao_Tu_${sText.replace('/','_')}_Den_${eText.replace('/','_')}`;
+                            titleRow = [`BÁO CÁO TỔNG HỢP GIÁO VIÊN - TỪ ${sText} ĐẾN ${eText}`];
+                        }
                     } else if (startVal) {
                         reportTitleStr = `Bao_Cao_Tu_${sText.replace('/','_')}`;
                         titleRow = [`BÁO CÁO TỔNG HỢP GIÁO VIÊN - TỪ THÁNG ${sText}`];
@@ -1658,31 +1680,47 @@
             if (sessionStorage.getItem('beu_role') !== 'viewer') forceSaveAll(true); // Viewer thì không save
             
             let filterMode = 'all'; 
+            const yearVal = document.getElementById('reportYearFilter')?.value;
             const startVal = document.getElementById('reportMonthStart')?.value;
             const endVal = document.getElementById('reportMonthEnd')?.value;
 
             let sYear = 0, sMonth = 1, eYear = 9999, eMonth = 12;
             let shortRangeText = '';
 
-            if (startVal || endVal) {
+            if (yearVal) {
+                filterMode = 'range';
+                sYear = parseInt(yearVal, 10);
+                eYear = parseInt(yearVal, 10);
+                sMonth = 1;
+                eMonth = 12;
+                shortRangeText = `(NĂM ${sYear})`;
+            } else if (startVal || endVal) {
                 filterMode = 'range';
                 if (startVal) {
                     const parts = startVal.split('-');
                     sYear = parseInt(parts[0], 10);
                     sMonth = parseInt(parts[1], 10);
+                } else {
+                    sYear = 0; sMonth = 1;
                 }
                 if (endVal) {
                     const parts = endVal.split('-');
                     eYear = parseInt(parts[0], 10);
                     eMonth = parseInt(parts[1], 10);
+                } else {
+                    eYear = 9999; eMonth = 12;
                 }
 
                 if (startVal && endVal) {
-                    shortRangeText = `(${sMonth}/${sYear} - ${eMonth}/${eYear})`;
+                    if (sMonth === eMonth && sYear === eYear) {
+                        shortRangeText = `(THÁNG ${sMonth}/${sYear})`;
+                    } else {
+                        shortRangeText = `(${sMonth}/${sYear} - ${eMonth}/${eYear})`;
+                    }
                 } else if (startVal) {
-                    shortRangeText = `(Từ ${sMonth}/${sYear})`;
+                    shortRangeText = `(TỪ THÁNG ${sMonth}/${sYear})`;
                 } else if (endVal) {
-                    shortRangeText = `(Đến ${eMonth}/${eYear})`;
+                    shortRangeText = `(ĐẾN THÁNG ${eMonth}/${eYear})`;
                 }
             }
 
@@ -1692,6 +1730,26 @@
                 const sVal = sYear * 12 + sMonth;
                 const eVal = eYear * 12 + eMonth;
                 return val >= sVal && val <= eVal;
+            };
+
+            const checkDateMatch = (termStr) => {
+                if (!termStr || termStr.trim() === '') return null; // Trống -> null
+                const match = termStr.match(/(\d{1,2})\/(\d{4})/);
+                if (!match) return null;
+                const m = parseInt(match[1], 10);
+                const y = parseInt(match[2], 10);
+                if (filterMode === 'range') return isInRange(m, y);
+                return true; // 'all'
+            };
+
+            const checkEndDateMatch = (endStr) => {
+                if (!endStr || endStr.trim() === '') return false;
+                const match = endStr.match(/(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/);
+                if (!match) return false;
+                const m = parseInt(match[2], 10);
+                const y = parseInt(match[3], 10);
+                if (filterMode === 'range') return isInRange(m, y);
+                return true; // 'all'
             };
 
             let statCanThu = 0; 
@@ -1760,145 +1818,106 @@
                     const lop = idxLop >= 0 ? getCellTextSafe(cells, idxLop) : "";
                     const startStr = idxStart >= 0 ? getCellTextSafe(cells, idxStart) : "";
                     const totalVal = idxTong >= 0 ? parseCurrency(getCellTextSafe(cells, idxTong)) : 0;
-                    const d1Val = idxD1 >= 0 ? parseCurrency(getCellTextSafe(cells, idxD1)) : 0;
                     const p1Str = idxP1 >= 0 ? getCellTextSafe(cells, idxP1) : "";
-                    const d2Val = idxD2 >= 0 ? parseCurrency(getCellTextSafe(cells, idxD2)) : 0;
                     const p2Str = idxP2 >= 0 ? getCellTextSafe(cells, idxP2) : "";
                     const remainingDeposit = idxConLai >= 0 ? parseCurrency(getCellTextSafe(cells, idxConLai)) : 0; 
                     const actualEnd = idxActualEnd >= 0 ? getCellTextSafe(cells, idxActualEnd) : "";
                     const refunded = idxRefunded >= 0 ? parseCurrency(getCellTextSafe(cells, idxRefunded)) : 0;
                     const isConfirmed = tr.querySelector('input[type="checkbox"]')?.hasAttribute('checked') || false;
 
+                    const d1Val = idxD1 >= 0 ? parseCurrency(getCellTextSafe(cells, idxD1)) : 0;
+                    const d2Val = idxD2 >= 0 ? parseCurrency(getCellTextSafe(cells, idxD2)) : 0;
                     const rawCollected = d1Val + d2Val;
-                    
-                    // --- TÍNH TOÁN CẦN THU CHÍNH XÁC THEO TỪNG ĐỢT ---
-                    let valD1Str = getCellTextSafe(cells, idxD1).trim().toLowerCase();
-                    let valD2Str = getCellTextSafe(cells, idxD2).trim().toLowerCase();
-                    let d1IsBlank = (valD1Str === '');
-                    let d2IsBlank = (valD2Str === '');
-                    
-                    let owedD1 = 0;
-                    let owedD2 = 0;
-                    if (remainingDeposit > 0) {
-                        if (d1IsBlank && d2IsBlank) {
-                            owedD1 = remainingDeposit / 2;
-                            owedD2 = remainingDeposit / 2;
-                        } else if (d1IsBlank && !d2IsBlank) {
-                            owedD1 = remainingDeposit;
-                        } else if (!d1IsBlank && d2IsBlank) {
-                            owedD2 = remainingDeposit;
-                        } else {
-                            owedD2 = remainingDeposit; // Trường hợp còn dư lẻ
-                        }
-                    }
-                    // -----------------------------------------------------
-                    
-                    // Phân biệt dữ liệu của năm nào dựa vào TG BẮT ĐẦU
-                    let baseYear = null;
-                    let baseMonth = null;
-                    if (startStr) {
-                        const startMatch = startStr.match(/(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/);
-                        if (startMatch) {
-                            baseMonth = parseInt(startMatch[2], 10);
-                            baseYear = parseInt(startMatch[3], 10);
-                        }
-                    }
 
                     let rowCanThu = 0;
-                    let rowDaThu = rawCollected;
+                    let rowDaThu = 0;
                     let rowHoanTra = 0;
-                    let rowChuaThu = 0;
                     let rowChuaHoanTra = 0;
 
-                    if (filterMode === 'range') {
-                        if (isInRange(baseMonth, baseYear) && !isConfirmed) {
-                            totalCurrentlyHolding += rawCollected;
-                        }
+                    let valD1Str = getCellTextSafe(cells, idxD1).trim().toLowerCase();
+                    let valD2Str = getCellTextSafe(cells, idxD2).trim().toLowerCase();
+                    let d1IsBlank = (valD1Str === '' || valD1Str === '0' || valD1Str === 'không');
+                    let d2IsBlank = (valD2Str === '' || valD2Str === '0' || valD2Str === 'không');
 
-                        // Tính "Cần thu" dựa trên "Ký quỹ còn lại" và khoảng thời gian
-                        let expectedAmount = 0;
-                        
-                        // Check Đợt 1
-                        if (!p1Str || p1Str.trim() === '') {
-                            expectedAmount += owedD1; // Để trống = cần thu ngay
-                        } else {
-                            const match1 = p1Str.match(/(\d{1,2})\/(\d{4})/);
-                            if (match1 && isInRange(parseInt(match1[1], 10), parseInt(match1[2], 10))) {
-                                expectedAmount += owedD1;
-                            }
-                        }
-                        
-                        // Check Đợt 2
-                        if (!p2Str || p2Str.trim() === '') {
-                            expectedAmount += owedD2; // Để trống = cần thu ngay
-                        } else {
-                            const match2 = p2Str.match(/(\d{1,2})\/(\d{4})/);
-                            if (match2 && isInRange(parseInt(match2[1], 10), parseInt(match2[2], 10))) {
-                                expectedAmount += owedD2;
-                            }
-                        }
-                        
-                        // Không thể thu vượt quá số tiền Còn Lại thực tế
-                        rowCanThu = Math.min(expectedAmount, remainingDeposit);
-
-                        // Hoàn trả (dựa theo tháng Thực Tế Kết Thúc)
-                        if (actualEnd) {
-                            const endMatch = actualEnd.match(/(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})/);
-                            if (endMatch && isInRange(parseInt(endMatch[2],10), parseInt(endMatch[3],10))) {
-                                if (isConfirmed) {
-                                    rowHoanTra = refunded || rawCollected;
-                                    statLopHoanTat++;
-                                } else {
-                                    rowChuaHoanTra = refunded || rawCollected;
-                                }
-                            }
-                        }
-
-                        statCanThu += rowCanThu;
-                        statHoanTra += rowHoanTra;
-                        statChuaHoanTra += rowChuaHoanTra;
-
-                        if (gv && lop && (rowCanThu > 0 || rowHoanTra > 0 || rowChuaHoanTra > 0)) {
-                            const key = gv + '|||' + lop;
-                            if (!teacherStats[key]) teacherStats[key] = { gv: gv, lop: lop, canThu: 0, hoanTra: 0, chuaHoanTra: 0, daThu: 0, chuaThu: 0 };
-                            teacherStats[key].canThu += rowCanThu;
-                            teacherStats[key].hoanTra += rowHoanTra;
-                            teacherStats[key].chuaHoanTra += rowChuaHoanTra;
-                        }
-
+                    // 1. ĐÃ THU KÝ QUỸ
+                    if (filterMode === 'all') {
+                        rowDaThu = rawCollected;
                     } else {
-                        // Logic Lũy kế toàn thời gian (khi không chọn bộ lọc nào)
-                        if (!isConfirmed) {
-                            totalCurrentlyHolding += rawCollected;
+                        let match1 = checkDateMatch(p1Str);
+                        let match2 = checkDateMatch(p2Str);
+                        if (match1 === true && d1Val > 0) rowDaThu += d1Val;
+                        if (match2 === true && d2Val > 0) rowDaThu += d2Val;
+                    }
+
+                    // 2. CẦN THU KÝ QUỸ
+                    if (remainingDeposit > 0 && !isConfirmed) {
+                        let amountToCollectD1 = 0;
+                        let amountToCollectD2 = 0;
+
+                        if (d1IsBlank && d2IsBlank) {
+                            amountToCollectD1 = remainingDeposit / 2;
+                            amountToCollectD2 = remainingDeposit / 2;
+                        } else if (d1IsBlank && !d2IsBlank) {
+                            amountToCollectD1 = remainingDeposit;
+                        } else if (!d1IsBlank && d2IsBlank) {
+                            amountToCollectD2 = remainingDeposit;
+                        } else {
+                            amountToCollectD2 = remainingDeposit;
                         }
 
-                        rowCanThu = remainingDeposit; 
-                        rowChuaThu = remainingDeposit; 
-
-                        if (actualEnd) {
-                            if (isConfirmed) {
-                                rowHoanTra = refunded || rawCollected;
-                                statLopHoanTat++;
-                            } else {
-                                rowChuaHoanTra = refunded || rawCollected;
-                            }
+                        if (filterMode === 'all') {
+                            rowCanThu = remainingDeposit;
+                        } else {
+                            let owedInMonth = 0;
+                            let match1 = checkDateMatch(p1Str);
+                            let match2 = checkDateMatch(p2Str);
+                            
+                            if (amountToCollectD1 > 0 && (match1 === true || match1 === null)) owedInMonth += amountToCollectD1;
+                            if (amountToCollectD2 > 0 && (match2 === true || match2 === null)) owedInMonth += amountToCollectD2;
+                            
+                            rowCanThu = Math.min(owedInMonth, remainingDeposit);
                         }
+                    }
 
-                        statCanThu += rowCanThu;
-                        statDaThu += rowDaThu;
-                        statChuaThu += rowChuaThu;
-                        statHoanTra += rowHoanTra;
-                        statChuaHoanTra += rowChuaHoanTra;
+                    // 3. HOÀN TRẢ
+                    let endMatch = checkEndDateMatch(actualEnd);
+                    if (filterMode === 'all') {
+                         if (actualEnd) {
+                             if (isConfirmed) {
+                                 rowHoanTra = refunded || rawCollected;
+                                 statLopHoanTat++;
+                             } else {
+                                 rowChuaHoanTra = refunded || rawCollected;
+                             }
+                         }
+                    } else {
+                         if (actualEnd && endMatch) {
+                             if (isConfirmed) {
+                                 rowHoanTra = refunded || rawCollected;
+                                 statLopHoanTat++;
+                             } else {
+                                 rowChuaHoanTra = refunded || rawCollected;
+                             }
+                         }
+                    }
 
-                        if (gv && lop && (rowCanThu > 0 || rowDaThu > 0 || rowHoanTra > 0 || rowChuaHoanTra > 0)) {
-                            const key = gv + '|||' + lop;
-                            if (!teacherStats[key]) teacherStats[key] = { gv: gv, lop: lop, canThu: 0, hoanTra: 0, chuaHoanTra: 0, daThu: 0, chuaThu: 0 };
-                            teacherStats[key].daThu += rowDaThu;
-                            teacherStats[key].chuaThu += rowChuaThu;
-                            teacherStats[key].hoanTra += rowHoanTra;
-                            teacherStats[key].chuaHoanTra += rowChuaHoanTra;
-                            teacherStats[key].canThu += rowCanThu;
-                        }
+                    // 4. TỒN QUỸ (Cash in vault) - Luôn là Lũy kế toàn thời gian
+                    if (!isConfirmed) {
+                        totalCurrentlyHolding += rawCollected;
+                    }
+
+                    statCanThu += rowCanThu;
+                    statDaThu += rowDaThu;
+                    statHoanTra += rowHoanTra;
+                    statChuaHoanTra += rowChuaHoanTra;
+
+                    if (gv && lop && (rowCanThu > 0 || rowDaThu > 0 || rowHoanTra > 0 || rowChuaHoanTra > 0)) {
+                        const key = gv + '|||' + lop;
+                        if (!teacherStats[key]) teacherStats[key] = { gv: gv, lop: lop, canThu: 0, hoanTra: 0, chuaHoanTra: 0, daThu: 0, chuaThu: 0 };
+                        teacherStats[key].canThu += rowCanThu;
+                        teacherStats[key].daThu += rowDaThu;
+                        teacherStats[key].hoanTra += rowHoanTra;
+                        teacherStats[key].chuaHoanTra += rowChuaHoanTra;
                     }
                 }
             });
@@ -1906,53 +1925,60 @@
             document.getElementById('statTotalDeposit').innerHTML = `${formatCurrency(totalCurrentlyHolding)} <span class="text-2xl font-bold opacity-80">VNĐ</span>`;
 
             if (filterMode === 'range') {
-                document.getElementById('statTotalDepositTitle').innerHTML = `<i class="fas fa-wallet text-beu-teal"></i> Tồn Quỹ Đang Giữ ${shortRangeText}`;
+                document.getElementById('statTotalDepositTitle').innerHTML = `<i class="fas fa-wallet text-beu-teal"></i> Tổng Tồn Quỹ Học Viện Đang Giữ (Lũy kế)`;
 
-                document.getElementById('card1-title').innerText = `Cần Thu Ký Quỹ ${shortRangeText}`;
-                document.getElementById('card1-title').className = "text-xs text-yellow-600 font-bold uppercase tracking-widest mb-1 transition-all";
+                document.getElementById('card1-title').innerText = `CẦN THU KÝ QUỸ ${shortRangeText}`;
                 document.getElementById('reportTotalCollected').innerText = `${formatCurrency(statCanThu)} VNĐ`;
                 document.getElementById('reportTotalCollected').className = "text-2xl font-black text-yellow-500 mb-3 transition-all";
 
-                document.getElementById('card2-title').innerText = `Đã Hoàn Trả ${shortRangeText}`;
-                document.getElementById('reportTotalRefunded').innerText = `${formatCurrency(statHoanTra)} VNĐ`;
+                document.getElementById('card2-title').innerText = `ĐÃ THU KÝ QUỸ ${shortRangeText}`;
+                document.getElementById('reportTotalRefunded').innerText = `${formatCurrency(statDaThu)} VNĐ`;
+                document.getElementById('reportTotalRefunded').className = "text-2xl font-black text-beu-darkPurple mb-3 transition-all";
 
-                document.getElementById('card3-container').style.display = 'none'; 
+                document.getElementById('card3-container').style.display = 'flex'; 
+                document.getElementById('card3-title').innerText = `ĐÃ HOÀN TRẢ ${shortRangeText}`;
+                document.getElementById('reportTotalUncollected').innerText = `${formatCurrency(statHoanTra)} VNĐ`;
+                document.getElementById('reportTotalUncollected').className = "text-2xl font-black text-green-600 mb-3 transition-all";
 
-                document.getElementById('card4-title').innerText = `Lớp Đã Hoàn Tất ${shortRangeText}`;
+                document.getElementById('card4-title').innerText = `LỚP ĐÃ HOÀN TẤT ${shortRangeText}`;
                 document.getElementById('reportTotalClasses').innerText = `${statLopHoanTat} Lớp`;
 
-                document.getElementById('th-col-2').innerText = `Cần Thu Ký Quỹ ${shortRangeText}`;
-                document.getElementById('th-col-2').className = "py-5 px-6 font-bold text-center text-yellow-600 whitespace-nowrap transition-all";
-                document.getElementById('th-col-3').style.display = 'none'; 
-                document.getElementById('th-col-chua-hoan-tra').innerText = `Chưa Hoàn Trả ${shortRangeText}`;
+                document.getElementById('th-col-2').innerText = `Đã Thu ${shortRangeText}`;
+                document.getElementById('th-col-2').className = "py-5 px-6 font-bold text-center text-beu-darkPurple whitespace-nowrap transition-all";
+                document.getElementById('th-col-3').style.display = 'table-cell'; 
+                document.getElementById('th-col-3').innerText = `Cần Thu ${shortRangeText}`;
+                document.getElementById('th-col-chua-hoan-tra').innerText = `Cần Hoàn Trả ${shortRangeText}`;
                 document.getElementById('th-col-4').innerText = `Đã Hoàn Trả ${shortRangeText}`;
 
-                document.getElementById('statUnrefundedTitle').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Chưa Hoàn Trả ${shortRangeText}`;
+                document.getElementById('statUnrefundedTitle').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Cần Hoàn Trả ${shortRangeText}`;
                 document.getElementById('statUnrefunded').innerHTML = `${formatCurrency(statChuaHoanTra)} <span class="text-lg font-bold opacity-80">VNĐ</span>`;
             } else {
                 document.getElementById('statTotalDepositTitle').innerHTML = `<i class="fas fa-wallet text-beu-teal"></i> Tổng Tồn Quỹ Học Viện Đang Giữ (Lũy kế)`;
 
-                document.getElementById('card1-title').innerText = `Tổng Ký Quỹ Đã Thu (Lũy kế)`;
-                document.getElementById('card1-title').className = "text-xs text-gray-400 font-bold uppercase tracking-widest mb-1 transition-all";
+                document.getElementById('card1-title').innerText = `TỔNG ĐÃ THU (LŨY KẾ)`;
                 document.getElementById('reportTotalCollected').innerText = `${formatCurrency(statDaThu)} VNĐ`;
                 document.getElementById('reportTotalCollected').className = "text-2xl font-black text-beu-darkPurple mb-3 transition-all";
 
-                document.getElementById('card2-title').innerText = `Đã Hoàn Trả (Lũy Kế)`;
-                document.getElementById('reportTotalRefunded').innerText = `${formatCurrency(statHoanTra)} VNĐ`;
+                document.getElementById('card2-title').innerText = `CHƯA THU (CÒN NỢ LŨY KẾ)`;
+                document.getElementById('reportTotalRefunded').innerText = `${formatCurrency(statCanThu)} VNĐ`;
+                document.getElementById('reportTotalRefunded').className = "text-2xl font-black text-yellow-500 mb-3 transition-all";
 
                 document.getElementById('card3-container').style.display = 'flex';
-                document.getElementById('reportTotalUncollected').innerText = `${formatCurrency(statChuaThu)} VNĐ`;
+                document.getElementById('card3-title').innerText = `ĐÃ HOÀN TRẢ (LŨY KẾ)`;
+                document.getElementById('reportTotalUncollected').innerText = `${formatCurrency(statHoanTra)} VNĐ`;
+                document.getElementById('reportTotalUncollected').className = "text-2xl font-black text-green-600 mb-3 transition-all";
 
-                document.getElementById('card4-title').innerText = `Lớp Đã Hoàn Tất`;
+                document.getElementById('card4-title').innerText = `LỚP ĐÃ HOÀN TẤT (LŨY KẾ)`;
                 document.getElementById('reportTotalClasses').innerText = `${statLopHoanTat} Lớp`;
 
-                document.getElementById('th-col-2').innerText = `Tổng Đã Thu Ký Quỹ`;
+                document.getElementById('th-col-2').innerText = `Tổng Đã Thu`;
                 document.getElementById('th-col-2').className = "py-5 px-6 font-bold text-center text-beu-darkPurple whitespace-nowrap transition-all";
                 document.getElementById('th-col-3').style.display = 'table-cell'; 
-                document.getElementById('th-col-chua-hoan-tra').innerText = `Chưa Hoàn Trả`;
+                document.getElementById('th-col-3').innerText = `Còn Nợ (Cần Thu)`;
+                document.getElementById('th-col-chua-hoan-tra').innerText = `Cần Hoàn Trả`;
                 document.getElementById('th-col-4').innerText = `Đã Hoàn Trả`;
 
-                document.getElementById('statUnrefundedTitle').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Tổng Chưa Hoàn Trả (Lũy kế)`;
+                document.getElementById('statUnrefundedTitle').innerHTML = `<i class="fas fa-exclamation-triangle"></i> Tổng Cần Hoàn Trả (Lũy kế)`;
                 document.getElementById('statUnrefunded').innerHTML = `${formatCurrency(statChuaHoanTra)} <span class="text-lg font-bold opacity-80">VNĐ</span>`;
             }
 
@@ -1970,33 +1996,17 @@
                         
                         const chuaHoanTraHtml = data.chuaHoanTra > 0 
                             ? `<span class="text-red-500 font-black">${formatCurrency(data.chuaHoanTra)}đ</span>` 
-                            : `<span class="text-gray-400 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">Hoàn tất</span>`;
+                            : `<span class="text-gray-400 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">0đ</span>`;
 
-                        if (filterMode === 'range') {
-                            tr.innerHTML = `
-                                <td class="py-4 px-6 text-center font-bold text-gray-400">${stt++}</td>
-                                <td class="py-4 px-6 font-bold text-beu-darkPurple">${data.gv}</td>
-                                <td class="py-4 px-6 text-center font-bold text-beu-darkPurple">${data.lop}</td>
-                                <td class="py-4 px-6 text-center font-black text-yellow-500">${formatCurrency(data.canThu)}đ</td>
-                                <td class="py-4 px-6 text-center font-bold text-red-500" style="display:none;"></td>
-                                <td class="py-4 px-6 text-center font-bold">${chuaHoanTraHtml}</td>
-                                <td class="py-4 px-6 text-center font-bold text-green-600">${formatCurrency(data.hoanTra)}đ</td>
-                            `;
-                        } else {
-                            const chuaThuHtml = data.chuaThu > 0 
-                                ? `<span class="text-yellow-600 font-black">${formatCurrency(data.chuaThu)}đ</span>` 
-                                : `<span class="text-gray-400 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">Không nợ</span>`;
-                                
-                            tr.innerHTML = `
-                                <td class="py-4 px-6 text-center font-bold text-gray-400">${stt++}</td>
-                                <td class="py-4 px-6 font-bold text-beu-darkPurple">${data.gv}</td>
-                                <td class="py-4 px-6 text-center font-bold text-beu-darkPurple">${data.lop}</td>
-                                <td class="py-4 px-6 text-center font-black text-beu-darkPurple">${formatCurrency(data.daThu)}đ</td>
-                                <td class="py-4 px-6 text-center font-bold">${chuaThuHtml}</td>
-                                <td class="py-4 px-6 text-center font-bold">${chuaHoanTraHtml}</td>
-                                <td class="py-4 px-6 text-center font-bold text-green-600">${formatCurrency(data.hoanTra)}đ</td>
-                            `;
-                        }
+                        tr.innerHTML = `
+                            <td class="py-4 px-6 text-center font-bold text-gray-400">${stt++}</td>
+                            <td class="py-4 px-6 font-bold text-beu-darkPurple">${data.gv}</td>
+                            <td class="py-4 px-6 text-center font-bold text-beu-darkPurple">${data.lop}</td>
+                            <td class="py-4 px-6 text-center font-black text-beu-darkPurple">${formatCurrency(data.daThu)}đ</td>
+                            <td class="py-4 px-6 text-center font-bold">${data.canThu > 0 ? `<span class="text-yellow-600 font-black">${formatCurrency(data.canThu)}đ</span>` : `<span class="text-gray-400 bg-gray-50 px-3 py-1 rounded-lg border border-gray-200">0đ</span>`}</td>
+                            <td class="py-4 px-6 text-center font-bold">${chuaHoanTraHtml}</td>
+                            <td class="py-4 px-6 text-center font-bold text-green-600">${formatCurrency(data.hoanTra)}đ</td>
+                        `;
                         reportTbody.appendChild(tr);
                     }
                 }
@@ -2141,27 +2151,30 @@
                                 term2 = m2 + '/' + y2;
                             }
 
-                            // Tính năng mới: Xử lý giá trị "0" nghĩa là KHÔNG CÓ đợt
                             let valD1Str = getCellTextSafe(idxD1).trim().toLowerCase();
                             let valD2Str = getCellTextSafe(idxD2).trim().toLowerCase();
                             let isD1Zero = (valD1Str === '0' || valD1Str === 'không');
                             let isD2Zero = (valD2Str === '0' || valD2Str === 'không');
 
                             let currentTotal = getCellTextSafe(idxTotal);
-                            
-                            // 1. Tự động điền 1.000.000 nếu bảng mới hoàn toàn
-                            if (currentTotal === '') {
-                                setCellTextSafe(idxTotal, '1.000.000');
-                                currentTotal = '1.000.000';
-                            }
-                            
-                            // 2. Chỉnh lại TỔNG TIỀN cho khớp thực tế nếu có đợt bằng 0
-                            if (isD1Zero && isD2Zero) {
-                                setCellTextSafe(idxTotal, '0');
-                            } else if (isD2Zero) {
-                                setCellTextSafe(idxTotal, getCellTextSafe(idxD1));
-                            } else if (isD1Zero) {
-                                setCellTextSafe(idxTotal, getCellTextSafe(idxD2));
+                            let d1ValStrRaw = getCellTextSafe(idxD1);
+                            let d2ValStrRaw = getCellTextSafe(idxD2);
+
+                            // Lô-gic mới: Chống kẹt TỔNG TIỀN ở mốc 500k khi xóa trắng ô Ký Quỹ Đợt 2
+                            let canAutoFill = !currentTotal || currentTotal === '1.000.000' || currentTotal === '0' || currentTotal === '500.000' || currentTotal === d1ValStrRaw || currentTotal === d2ValStrRaw;
+
+                            if (canAutoFill) {
+                                if (isD1Zero && isD2Zero) {
+                                    setCellTextSafe(idxTotal, '0');
+                                } else if (isD2Zero) {
+                                    let fallback = d1ValStrRaw ? d1ValStrRaw : '500.000';
+                                    setCellTextSafe(idxTotal, fallback);
+                                } else if (isD1Zero) {
+                                    let fallback = d2ValStrRaw ? d2ValStrRaw : '500.000';
+                                    setCellTextSafe(idxTotal, fallback);
+                                } else {
+                                    setCellTextSafe(idxTotal, '1.000.000');
+                                }
                             }
 
                             // 3. Tự động xóa hoặc điền Kỳ lương tương ứng
@@ -2455,7 +2468,7 @@
             }
         }
 
-        // 1. TÍNH NĂNG MỞ KẾT NỐI FILE NAS LOCAL VÀ TỰ ĐỘNG ĐỌC LUÔN DỮ LIỆU
+        // 1. TÍNH NĂNG MỞ KẾT NỐI FILE NAS LOCAL VÀ TỰ ĐỘNG ĐỌC LUÔN DỮ LUỘN DỮ LIỆU
         async function connectNasFile() {
             try {
                 // Mở File Picker
